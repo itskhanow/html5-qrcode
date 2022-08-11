@@ -111,8 +111,7 @@ var Html5Qrcode = (function () {
         if (!cameraIdOrConfig) {
             throw "cameraIdOrConfig is required";
         }
-        if (!qrCodeSuccessCallback
-            || typeof qrCodeSuccessCallback != "function") {
+        if (!qrCodeSuccessCallback || typeof qrCodeSuccessCallback != "function") {
             throw "qrCodeSuccessCallback is required and should be a function.";
         }
         if (!qrCodeErrorCallback) {
@@ -123,8 +122,8 @@ var Html5Qrcode = (function () {
         var videoConstraintsAvailableAndValid = false;
         if (internalConfig.videoConstraints) {
             if (!internalConfig.isMediaStreamConstraintsValid()) {
-                this.logger.logError("'videoConstraints' is not valid 'MediaStreamConstraints, "
-                    + "it will be ignored.'", true);
+                this.logger.logError("'videoConstraints' is not valid 'MediaStreamConstraints, " +
+                    "it will be ignored.'", true);
             }
             else {
                 videoConstraintsAvailableAndValid = true;
@@ -134,7 +133,8 @@ var Html5Qrcode = (function () {
         var isShadedBoxEnabled = internalConfig.isShadedBoxEnabled();
         var element = document.getElementById(this.elementId);
         var rootElementWidth = element.clientWidth
-            ? element.clientWidth : Constants.DEFAULT_WIDTH;
+            ? element.clientWidth
+            : Constants.DEFAULT_WIDTH;
         element.style.position = "relative";
         this.shouldScan = true;
         this.element = element;
@@ -150,11 +150,14 @@ var Html5Qrcode = (function () {
                 return;
             }
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({
+                navigator.mediaDevices
+                    .getUserMedia({
                     audio: false,
-                    video: videoConstraints
-                }).then(function (stream) {
-                    $this.onMediaStreamReceived(stream, internalConfig, areVideoConstraintsEnabled, rootElementWidth, qrCodeSuccessCallback, qrCodeErrorCallback)
+                    video: videoConstraints,
+                })
+                    .then(function (stream) {
+                    $this
+                        .onMediaStreamReceived(stream, internalConfig, areVideoConstraintsEnabled, rootElementWidth, qrCodeSuccessCallback, qrCodeErrorCallback)
                         .then(function (_) {
                         toScanningStateChangeTransaction.execute();
                         $this.isScanning = true;
@@ -271,14 +274,13 @@ var Html5Qrcode = (function () {
         });
     };
     Html5Qrcode.prototype.scanFile = function (imageFile, showImage) {
-        return this.scanFileV2(imageFile, showImage)
-            .then(function (html5qrcodeResult) { return html5qrcodeResult.decodedText; });
+        return this.scanFileV2(imageFile, showImage).then(function (html5qrcodeResult) { return html5qrcodeResult.decodedText; });
     };
     Html5Qrcode.prototype.scanFileV2 = function (imageFile, showImage) {
         var _this = this;
         if (!imageFile || !(imageFile instanceof File)) {
-            throw "imageFile argument is mandatory and should be instance "
-                + "of File. Use 'event.target.files[0]'.";
+            throw ("imageFile argument is mandatory and should be instance " +
+                "of File. Use 'event.target.files[0]'.");
         }
         if ((0, core_1.isNullOrUndefined)(showImage)) {
             showImage = true;
@@ -290,13 +292,14 @@ var Html5Qrcode = (function () {
             _this.possiblyCloseLastScanImageFile();
             _this.clearElement();
             _this.lastScanImageFile = URL.createObjectURL(imageFile);
-            var inputImage = new Image;
+            var inputImage = new Image();
             inputImage.onload = function () {
                 var imageWidth = inputImage.width;
                 var imageHeight = inputImage.height;
                 var element = document.getElementById(_this.elementId);
                 var containerWidth = element.clientWidth
-                    ? element.clientWidth : Constants.DEFAULT_WIDTH;
+                    ? element.clientWidth
+                    : Constants.DEFAULT_WIDTH;
                 var containerHeight = Math.max(element.clientHeight ? element.clientHeight : imageHeight, Constants.FILE_SCAN_MIN_HEIGHT);
                 var config = _this.computeCanvasDrawConfig(imageWidth, imageHeight, containerWidth, containerHeight);
                 if (showImage) {
@@ -321,7 +324,8 @@ var Html5Qrcode = (function () {
                 context.canvas.height = config.height;
                 context.drawImage(inputImage, 0, 0, imageWidth, imageHeight, 0, 0, config.width, config.height);
                 try {
-                    _this.qrcode.decodeAsync(hiddenCanvas)
+                    _this.qrcode
+                        .decodeAsync(hiddenCanvas)
                         .then(function (result) {
                         resolve(core_1.Html5QrcodeResultFactory.createFromQrcodeResult(result));
                     })
@@ -364,8 +368,8 @@ var Html5Qrcode = (function () {
     };
     Html5Qrcode.prototype.getRunningTrackCapabilities = function () {
         if (this.localMediaStream == null) {
-            throw "Scanning is not in running state, call this API only when"
-                + " QR code scanning using camera is in running state.";
+            throw ("Scanning is not in running state, call this API only when" +
+                " QR code scanning using camera is in running state.");
         }
         if (this.localMediaStream.getVideoTracks().length === 0) {
             throw "No video tracks found";
@@ -382,20 +386,20 @@ var Html5Qrcode = (function () {
             throw "invalid videoConstaints passed, check logs for more details";
         }
         if (this.localMediaStream === null) {
-            throw "Scanning is not in running state, call this API only when"
-                + " QR code scanning using camera is in running state.";
+            throw ("Scanning is not in running state, call this API only when" +
+                " QR code scanning using camera is in running state.");
         }
         if (this.localMediaStream.getVideoTracks().length === 0) {
             throw "No video tracks found";
         }
         return new Promise(function (resolve, reject) {
             if ("aspectRatio" in videoConstaints) {
-                reject("Chaning 'aspectRatio' in run-time is not yet "
-                    + "supported.");
+                reject("Chaning 'aspectRatio' in run-time is not yet " + "supported.");
                 return;
             }
             var videoTrack = _this.localMediaStream.getVideoTracks()[0];
-            videoTrack.applyConstraints(videoConstaints)
+            videoTrack
+                .applyConstraints(videoConstaints)
                 .then(function (_) {
                 resolve(_);
             })
@@ -406,7 +410,8 @@ var Html5Qrcode = (function () {
     };
     Html5Qrcode.getCamerasFromMediaDevices = function () {
         return new Promise(function (resolve, reject) {
-            navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+            navigator.mediaDevices
+                .getUserMedia({ audio: false, video: true })
                 .then(function (stream) {
                 var closeActiveStreams = function (stream) {
                     var tracks = stream.getVideoTracks();
@@ -417,24 +422,46 @@ var Html5Qrcode = (function () {
                         stream.removeTrack(track);
                     }
                 };
-                navigator.mediaDevices.enumerateDevices()
-                    .then(function (devices) {
-                    var results = [];
-                    for (var _i = 0, devices_1 = devices; _i < devices_1.length; _i++) {
-                        var device = devices_1[_i];
-                        if (device.kind === "videoinput") {
-                            results.push({
-                                id: device.deviceId,
-                                label: device.label
-                            });
+                if (window.Fatdeck &&
+                    window.Capacitor &&
+                    window.Fatdeck.ClientStore.nativeContext &&
+                    window.Capacitor.getPlatform() === "android") {
+                    window.Fatdeck.ClientStore.enumerateDevices().then(function (devices) {
+                        var results = [];
+                        for (var _i = 0, devices_1 = devices; _i < devices_1.length; _i++) {
+                            var device = devices_1[_i];
+                            if (device.kind === "videoinput") {
+                                results.push({
+                                    id: device.deviceId,
+                                    label: device.label,
+                                });
+                            }
                         }
-                    }
-                    closeActiveStreams(stream);
-                    resolve(results);
-                })
-                    .catch(function (err) {
-                    reject("".concat(err.name, " : ").concat(err.message));
-                });
+                        closeActiveStreams(stream);
+                        resolve(results);
+                    });
+                }
+                else {
+                    navigator.mediaDevices
+                        .enumerateDevices()
+                        .then(function (devices) {
+                        var results = [];
+                        for (var _i = 0, devices_2 = devices; _i < devices_2.length; _i++) {
+                            var device = devices_2[_i];
+                            if (device.kind === "videoinput") {
+                                results.push({
+                                    id: device.deviceId,
+                                    label: device.label,
+                                });
+                            }
+                        }
+                        closeActiveStreams(stream);
+                        resolve(results);
+                    })
+                        .catch(function (err) {
+                        reject("".concat(err.name, " : ").concat(err.message));
+                    });
+                }
             })
                 .catch(function (err) {
                 reject("".concat(err.name, " : ").concat(err.message));
@@ -450,7 +477,7 @@ var Html5Qrcode = (function () {
                     if (sourceInfo.kind === "video") {
                         results.push({
                             id: sourceInfo.id,
-                            label: sourceInfo.label
+                            label: sourceInfo.label,
                         });
                     }
                 }
@@ -480,16 +507,15 @@ var Html5Qrcode = (function () {
             core_1.Html5QrcodeSupportedFormats.UPC_E,
             core_1.Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
         ];
-        if (!configOrVerbosityFlag
-            || typeof configOrVerbosityFlag == "boolean") {
+        if (!configOrVerbosityFlag || typeof configOrVerbosityFlag == "boolean") {
             return allFormats;
         }
         if (!configOrVerbosityFlag.formatsToSupport) {
             return allFormats;
         }
         if (!Array.isArray(configOrVerbosityFlag.formatsToSupport)) {
-            throw "configOrVerbosityFlag.formatsToSupport should be undefined "
-                + "or an array.";
+            throw ("configOrVerbosityFlag.formatsToSupport should be undefined " +
+                "or an array.");
         }
         if (configOrVerbosityFlag.formatsToSupport.length === 0) {
             throw "Atleast 1 formatsToSupport is needed.";
@@ -516,15 +542,15 @@ var Html5Qrcode = (function () {
         var qrDimensions = this.toQrdimensions(viewfinderWidth, viewfinderHeight, qrboxSize);
         var validateMinSize = function (size) {
             if (size < Constants.MIN_QR_BOX_SIZE) {
-                throw "minimum size of 'config.qrbox' dimension value is"
-                    + " ".concat(Constants.MIN_QR_BOX_SIZE, "px.");
+                throw ("minimum size of 'config.qrbox' dimension value is" +
+                    " ".concat(Constants.MIN_QR_BOX_SIZE, "px."));
             }
         };
         var correctWidthBasedOnRootElementSize = function (configWidth) {
             if (configWidth > viewfinderWidth) {
-                _this.logger.warn("`qrbox.width` or `qrbox` is larger than the"
-                    + " width of the root element. The width will be truncated"
-                    + " to the width of root element.");
+                _this.logger.warn("`qrbox.width` or `qrbox` is larger than the" +
+                    " width of the root element. The width will be truncated" +
+                    " to the width of root element.");
                 configWidth = viewfinderWidth;
             }
             return configWidth;
@@ -541,8 +567,8 @@ var Html5Qrcode = (function () {
             return;
         }
         if (qrboxSize.width === undefined || qrboxSize.height === undefined) {
-            throw "Invalid instance of QrDimensions passed for "
-                + "'config.qrbox'. Both 'width' and 'height' should be set.";
+            throw ("Invalid instance of QrDimensions passed for " +
+                "'config.qrbox'. Both 'width' and 'height' should be set.");
         }
     };
     Html5Qrcode.prototype.toQrdimensions = function (viewfinderWidth, viewfinderHeight, qrboxSize) {
@@ -554,8 +580,9 @@ var Html5Qrcode = (function () {
                 return qrboxSize(viewfinderWidth, viewfinderHeight);
             }
             catch (error) {
-                throw new Error("qrbox config was passed as a function but it failed with "
-                    + "unknown error" + error);
+                throw new Error("qrbox config was passed as a function but it failed with " +
+                    "unknown error" +
+                    error);
             }
         }
         return qrboxSize;
@@ -564,22 +591,23 @@ var Html5Qrcode = (function () {
         if (internalConfig.isShadedBoxEnabled()) {
             this.validateQrboxSize(viewfinderWidth, viewfinderHeight, internalConfig);
         }
-        var qrboxSize = (0, core_1.isNullOrUndefined)(internalConfig.qrbox) ?
-            { width: viewfinderWidth, height: viewfinderHeight } : internalConfig.qrbox;
+        var qrboxSize = (0, core_1.isNullOrUndefined)(internalConfig.qrbox)
+            ? { width: viewfinderWidth, height: viewfinderHeight }
+            : internalConfig.qrbox;
         this.validateQrboxConfig(qrboxSize);
         var qrDimensions = this.toQrdimensions(viewfinderWidth, viewfinderHeight, qrboxSize);
         if (qrDimensions.height > viewfinderHeight) {
-            this.logger.warn("[Html5Qrcode] config.qrbox has height that is"
-                + "greater than the height of the video stream. Shading will be"
-                + " ignored");
+            this.logger.warn("[Html5Qrcode] config.qrbox has height that is" +
+                "greater than the height of the video stream. Shading will be" +
+                " ignored");
         }
-        var shouldShadingBeApplied = internalConfig.isShadedBoxEnabled()
-            && qrDimensions.height <= viewfinderHeight;
+        var shouldShadingBeApplied = internalConfig.isShadedBoxEnabled() &&
+            qrDimensions.height <= viewfinderHeight;
         var defaultQrRegion = {
             x: 0,
             y: 0,
             width: viewfinderWidth,
-            height: viewfinderHeight
+            height: viewfinderHeight,
         };
         var qrRegion = shouldShadingBeApplied
             ? this.getShadedRegionBounds(viewfinderWidth, viewfinderHeight, qrDimensions)
@@ -615,12 +643,14 @@ var Html5Qrcode = (function () {
         if (this.stateManagerProxy.isPaused()) {
             return Promise.resolve(false);
         }
-        return this.qrcode.decodeAsync(this.canvasElement)
+        return this.qrcode
+            .decodeAsync(this.canvasElement)
             .then(function (result) {
             qrCodeSuccessCallback(result.text, core_1.Html5QrcodeResultFactory.createFromQrcodeResult(result));
             _this.possiblyUpdateShaders(true);
             return true;
-        }).catch(function (error) {
+        })
+            .catch(function (error) {
             _this.possiblyUpdateShaders(false);
             var errorMessage = strings_1.Html5QrcodeStrings.codeParseError(error);
             qrCodeErrorCallback(errorMessage, core_1.Html5QrcodeErrorFactory.createFrom(errorMessage));
@@ -656,15 +686,15 @@ var Html5Qrcode = (function () {
             if (!isSuccessfull && internalConfig.disableFlip !== true) {
                 _this.context.translate(_this.context.canvas.width, 0);
                 _this.context.scale(-1, 1);
-                _this.scanContext(qrCodeSuccessCallback, qrCodeErrorCallback)
-                    .finally(function () {
+                _this.scanContext(qrCodeSuccessCallback, qrCodeErrorCallback).finally(function () {
                     triggerNextScan();
                 });
             }
             else {
                 triggerNextScan();
             }
-        }).catch(function (error) {
+        })
+            .catch(function (error) {
             _this.logger.logError("Error happend while scanning context", error);
             triggerNextScan();
         });
@@ -697,15 +727,18 @@ var Html5Qrcode = (function () {
             }
             else {
                 var constraints = {
-                    aspectRatio: internalConfig.aspectRatio
+                    aspectRatio: internalConfig.aspectRatio,
                 };
                 var track = mediaStream.getVideoTracks()[0];
-                track.applyConstraints(constraints)
+                track
+                    .applyConstraints(constraints)
                     .then(function (_) { return setupVideo(); })
                     .catch(function (error) {
-                    $this.logger.logErrors(["[Html5Qrcode] Constriants could not "
-                            + "be satisfied, ignoring constraints",
-                        error]);
+                    $this.logger.logErrors([
+                        "[Html5Qrcode] Constriants could not " +
+                            "be satisfied, ignoring constraints",
+                        error,
+                    ]);
                     setupVideo();
                 });
             }
@@ -718,26 +751,25 @@ var Html5Qrcode = (function () {
         else if (typeof cameraIdOrConfig == "object") {
             var facingModeKey = "facingMode";
             var deviceIdKey = "deviceId";
-            var allowedFacingModeValues_1 = { "user": true, "environment": true };
+            var allowedFacingModeValues_1 = { user: true, environment: true };
             var exactKey = "exact";
             var isValidFacingModeValue = function (value) {
                 if (value in allowedFacingModeValues_1) {
                     return true;
                 }
                 else {
-                    throw "config has invalid 'facingMode' value = "
-                        + "'".concat(value, "'");
+                    throw "config has invalid 'facingMode' value = " + "'".concat(value, "'");
                 }
             };
             var keys = Object.keys(cameraIdOrConfig);
             if (keys.length !== 1) {
-                throw "'cameraIdOrConfig' object should have exactly 1 key,"
-                    + " if passed as an object, found ".concat(keys.length, " keys");
+                throw ("'cameraIdOrConfig' object should have exactly 1 key," +
+                    " if passed as an object, found ".concat(keys.length, " keys"));
             }
             var key = Object.keys(cameraIdOrConfig)[0];
             if (key !== facingModeKey && key !== deviceIdKey) {
-                throw "Only '".concat(facingModeKey, "' and '").concat(deviceIdKey, "' ")
-                    + " are supported for 'cameraIdOrConfig'";
+                throw ("Only '".concat(facingModeKey, "' and '").concat(deviceIdKey, "' ") +
+                    " are supported for 'cameraIdOrConfig'");
             }
             if (key === facingModeKey) {
                 var facingMode = cameraIdOrConfig.facingMode;
@@ -751,18 +783,18 @@ var Html5Qrcode = (function () {
                         if (isValidFacingModeValue(facingMode["".concat(exactKey)])) {
                             return {
                                 facingMode: {
-                                    exact: facingMode["".concat(exactKey)]
-                                }
+                                    exact: facingMode["".concat(exactKey)],
+                                },
                             };
                         }
                     }
                     else {
-                        throw "'facingMode' should be string or object with"
-                            + " ".concat(exactKey, " as key.");
+                        throw ("'facingMode' should be string or object with" +
+                            " ".concat(exactKey, " as key."));
                     }
                 }
                 else {
-                    var type_1 = (typeof facingMode);
+                    var type_1 = typeof facingMode;
                     throw "Invalid type of 'facingMode' = ".concat(type_1);
                 }
             }
@@ -774,33 +806,32 @@ var Html5Qrcode = (function () {
                 else if (typeof deviceId == "object") {
                     if (exactKey in deviceId) {
                         return {
-                            deviceId: { exact: deviceId["".concat(exactKey)] }
+                            deviceId: { exact: deviceId["".concat(exactKey)] },
                         };
                     }
                     else {
-                        throw "'deviceId' should be string or object with"
-                            + " ".concat(exactKey, " as key.");
+                        throw ("'deviceId' should be string or object with" +
+                            " ".concat(exactKey, " as key."));
                     }
                 }
                 else {
-                    var type_2 = (typeof deviceId);
+                    var type_2 = typeof deviceId;
                     throw "Invalid type of 'deviceId' = ".concat(type_2);
                 }
             }
         }
-        var type = (typeof cameraIdOrConfig);
+        var type = typeof cameraIdOrConfig;
         throw "Invalid type of 'cameraIdOrConfig' = ".concat(type);
     };
     Html5Qrcode.prototype.computeCanvasDrawConfig = function (imageWidth, imageHeight, containerWidth, containerHeight) {
-        if (imageWidth <= containerWidth
-            && imageHeight <= containerHeight) {
+        if (imageWidth <= containerWidth && imageHeight <= containerHeight) {
             var xoffset = (containerWidth - imageWidth) / 2;
             var yoffset = (containerHeight - imageHeight) / 2;
             return {
                 x: xoffset,
                 y: yoffset,
                 width: imageWidth,
-                height: imageHeight
+                height: imageHeight,
             };
         }
         else {
@@ -814,9 +845,9 @@ var Html5Qrcode = (function () {
                 imageWidth = (containerHeight / imageHeight) * imageWidth;
                 imageHeight = containerHeight;
             }
-            this.logger.log("Image downsampled from "
-                + "".concat(formerImageWidth, "X").concat(formerImageHeight)
-                + " to ".concat(imageWidth, "X").concat(imageHeight, "."));
+            this.logger.log("Image downsampled from " +
+                "".concat(formerImageWidth, "X").concat(formerImageHeight) +
+                " to ".concat(imageWidth, "X").concat(imageHeight, "."));
             return this.computeCanvasDrawConfig(imageWidth, imageHeight, containerWidth, containerHeight);
         }
     };
@@ -841,9 +872,9 @@ var Html5Qrcode = (function () {
         if (this.qrMatch === qrMatch) {
             return;
         }
-        if (this.hasBorderShaders
-            && this.borderShaders
-            && this.borderShaders.length) {
+        if (this.hasBorderShaders &&
+            this.borderShaders &&
+            this.borderShaders.length) {
             this.borderShaders.forEach(function (shader) {
                 shader.style.backgroundColor = qrMatch
                     ? Constants.BORDER_SHADER_MATCH_COLOR
@@ -865,46 +896,40 @@ var Html5Qrcode = (function () {
         canvasElement.style.width = "".concat(canvasWidth, "px");
         canvasElement.style.height = "".concat(canvasHeight, "px");
         canvasElement.style.display = "none";
-        canvasElement.id = (0, core_1.isNullOrUndefined)(customId)
-            ? "qr-canvas" : customId;
+        canvasElement.id = (0, core_1.isNullOrUndefined)(customId) ? "qr-canvas" : customId;
         return canvasElement;
     };
     Html5Qrcode.prototype.getShadedRegionBounds = function (width, height, qrboxSize) {
         if (qrboxSize.width > width || qrboxSize.height > height) {
-            throw "'config.qrbox' dimensions should not be greater than the "
-                + "dimensions of the root HTML element.";
+            throw ("'config.qrbox' dimensions should not be greater than the " +
+                "dimensions of the root HTML element.");
         }
         return {
             x: (width - qrboxSize.width) / 2,
             y: (height - qrboxSize.height) / 2,
             width: qrboxSize.width,
-            height: qrboxSize.height
+            height: qrboxSize.height,
         };
     };
     Html5Qrcode.prototype.possiblyInsertShadingElement = function (element, width, height, qrboxSize) {
-        if ((width - qrboxSize.width) < 1 || (height - qrboxSize.height) < 1) {
+        if (width - qrboxSize.width < 1 || height - qrboxSize.height < 1) {
             return;
         }
         var shadingElement = document.createElement("div");
         shadingElement.style.position = "absolute";
         var rightLeftBorderSize = (width - qrboxSize.width) / 2;
         var topBottomBorderSize = (height - qrboxSize.height) / 2;
-        shadingElement.style.borderLeft
-            = "".concat(rightLeftBorderSize, "px solid #0000007a");
-        shadingElement.style.borderRight
-            = "".concat(rightLeftBorderSize, "px solid #0000007a");
-        shadingElement.style.borderTop
-            = "".concat(topBottomBorderSize, "px solid #0000007a");
-        shadingElement.style.borderBottom
-            = "".concat(topBottomBorderSize, "px solid #0000007a");
+        shadingElement.style.borderLeft = "".concat(rightLeftBorderSize, "px solid #0000007a");
+        shadingElement.style.borderRight = "".concat(rightLeftBorderSize, "px solid #0000007a");
+        shadingElement.style.borderTop = "".concat(topBottomBorderSize, "px solid #0000007a");
+        shadingElement.style.borderBottom = "".concat(topBottomBorderSize, "px solid #0000007a");
         shadingElement.style.boxSizing = "border-box";
         shadingElement.style.top = "0px";
         shadingElement.style.bottom = "0px";
         shadingElement.style.left = "0px";
         shadingElement.style.right = "0px";
         shadingElement.id = "".concat(Constants.SHADED_REGION_ELEMENT_ID);
-        if ((width - qrboxSize.width) < 11
-            || (height - qrboxSize.height) < 11) {
+        if (width - qrboxSize.width < 11 || height - qrboxSize.height < 11) {
             this.hasBorderShaders = false;
         }
         else {
