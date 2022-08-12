@@ -398,18 +398,22 @@ export class Html5Qrcode {
                     window.Capacitor &&
                     window.Fatdeck.ClientStore.nativeContext &&
                     window.Capacitor.getPlatform() === "android") {
-                    window.Fatdeck.ClientStore.enumerateDevices().then((devices) => {
-                        const results = [];
-                        for (const device of devices) {
-                            if (device.kind === "videoinput") {
+                    window.Fatdeck.ClientStore.enumerateDevices().then((nativeDevices) => {
+                        navigator.mediaDevices.enumerateDevices().then((devices) => {
+                            let filteredDevices = devices.filter((device) => {
+                                return device.kind == "videoinput";
+                            });
+                            const results = [];
+                            filteredDevices.forEach((device, index) => {
+                                console.log(device, index, nativeDevices);
                                 results.push({
                                     id: device.deviceId,
-                                    label: device.label,
+                                    label: nativeDevices[index].label,
                                 });
-                            }
-                        }
-                        closeActiveStreams(stream);
-                        resolve(results);
+                            });
+                            closeActiveStreams(stream);
+                            resolve(results);
+                        });
                     });
                 }
                 else {

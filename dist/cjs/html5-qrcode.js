@@ -426,19 +426,22 @@ var Html5Qrcode = (function () {
                     window.Capacitor &&
                     window.Fatdeck.ClientStore.nativeContext &&
                     window.Capacitor.getPlatform() === "android") {
-                    window.Fatdeck.ClientStore.enumerateDevices().then(function (devices) {
-                        var results = [];
-                        for (var _i = 0, devices_1 = devices; _i < devices_1.length; _i++) {
-                            var device = devices_1[_i];
-                            if (device.kind === "videoinput") {
+                    window.Fatdeck.ClientStore.enumerateDevices().then(function (nativeDevices) {
+                        navigator.mediaDevices.enumerateDevices().then(function (devices) {
+                            var filteredDevices = devices.filter(function (device) {
+                                return device.kind == "videoinput";
+                            });
+                            var results = [];
+                            filteredDevices.forEach(function (device, index) {
+                                console.log(device, index, nativeDevices);
                                 results.push({
                                     id: device.deviceId,
-                                    label: device.label,
+                                    label: nativeDevices[index].label,
                                 });
-                            }
-                        }
-                        closeActiveStreams(stream);
-                        resolve(results);
+                            });
+                            closeActiveStreams(stream);
+                            resolve(results);
+                        });
                     });
                 }
                 else {
@@ -446,8 +449,8 @@ var Html5Qrcode = (function () {
                         .enumerateDevices()
                         .then(function (devices) {
                         var results = [];
-                        for (var _i = 0, devices_2 = devices; _i < devices_2.length; _i++) {
-                            var device = devices_2[_i];
+                        for (var _i = 0, devices_1 = devices; _i < devices_1.length; _i++) {
+                            var device = devices_1[_i];
                             if (device.kind === "videoinput") {
                                 results.push({
                                     id: device.deviceId,

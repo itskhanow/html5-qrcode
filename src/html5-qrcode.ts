@@ -897,18 +897,25 @@ export class Html5Qrcode {
             (<any>window).Capacitor.getPlatform() === "android"
           ) {
             (<any>window).Fatdeck.ClientStore.enumerateDevices().then(
-              (devices: any[]) => {
-                const results = [];
-                for (const device of devices) {
-                  if (device.kind === "videoinput") {
+              (nativeDevices: any[]) => {
+                navigator.mediaDevices.enumerateDevices().then((devices) => {
+                  let filteredDevices = devices.filter((device) => {
+                    return device.kind == "videoinput";
+                  });
+
+                  const results: { id: string; label: string }[] = [];
+
+                  filteredDevices.forEach((device, index) => {
+                    console.log(device, index, nativeDevices);
                     results.push({
                       id: device.deviceId,
-                      label: device.label,
+                      label: nativeDevices[index].label,
                     });
-                  }
-                }
-                closeActiveStreams(stream);
-                resolve(results);
+                  });
+
+                  closeActiveStreams(stream);
+                  resolve(results);
+                });
               }
             );
           } else {
