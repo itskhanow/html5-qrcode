@@ -433,7 +433,6 @@ var Html5Qrcode = (function () {
                             });
                             var results = [];
                             filteredDevices.forEach(function (device, index) {
-                                console.log(device, index, nativeDevices);
                                 results.push({
                                     id: device.deviceId,
                                     label: nativeDevices[index].label,

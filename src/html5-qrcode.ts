@@ -906,7 +906,6 @@ export class Html5Qrcode {
                   const results: { id: string; label: string }[] = [];
 
                   filteredDevices.forEach((device, index) => {
-                    console.log(device, index, nativeDevices);
                     results.push({
                       id: device.deviceId,
                       label: nativeDevices[index].label,

@@ -405,7 +405,6 @@ export class Html5Qrcode {
                             });
                             const results = [];
                             filteredDevices.forEach((device, index) => {
-                                console.log(device, index, nativeDevices);
                                 results.push({
                                     id: device.deviceId,
                                     label: nativeDevices[index].label,
